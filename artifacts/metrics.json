@@ -1,0 +1,12 @@
+{
+  "rows_original": 100000,
+  "columns_original": 18,
+  "missing_price_rows": 5053,
+  "duplicate_rows": 1961,
+  "rows_used_for_model": 94947,
+  "baseline_median_mae": 55774.36,
+  "catboost_mae": 13432.22,
+  "catboost_rmse": 48115.25,
+  "catboost_r2": 0.6188,
+  "training_seconds": 24.19
+}
