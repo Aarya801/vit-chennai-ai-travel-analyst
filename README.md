@@ -1,4 +1,10 @@
-# ✈️ AI Travel Analyst — VIT Chennai AIML Club
+✈️ AI Travel Analyst
+End-to-End Flight Price Prediction & Analytics
+
+A production-oriented machine learning pipeline that transforms
+flight pricing data into predictive insights through data
+preprocessing, feature engineering, model training, evaluation,
+and interactive deployment.
 
 **Track 3 — Data Science & Visualisation | AI Travel Analyst**
 
