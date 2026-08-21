@@ -1,0 +1,18 @@
+# Submission Checklist
+- [x] Official Track 3 dataset
+- [x] Part 1 exploration
+- [x] 5+ visualizations
+- [x] Part 2 modeling
+- [x] Evaluation metrics
+- [x] Part 3 Cheapest Booking Time Analysis
+- [x] Interactive dashboard
+- [x] README
+- [x] Project report
+- [x] Tests
+- [x] GitHub Actions
+- [x] Git history
+- [x] Demo script
+- [x] Interview cheat sheet
+- [ ] Record 3–5 minute demo video
+- [ ] Create public GitHub repository and push
+- [ ] Submit GitHub URL/video per club instructions
