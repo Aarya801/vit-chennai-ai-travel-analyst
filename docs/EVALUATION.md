@@ -2,9 +2,20 @@
 
 ## What this evaluation measures
 
-`python -m scripts.evaluate_model` runs the fixed CatBoost configuration through a reproducible, departure-date-ordered train/validation/test split. It reports MAE, RMSE, and R² for both CatBoost and a median-price baseline. No score is checked in or claimed by this document; run the command with the required packages to produce the values and split metadata for the supplied dataset.
+`python -m scripts.evaluate_model` runs the fixed CatBoost configuration through a reproducible, departure-date-ordered train/validation/test split. It reports MAE, RMSE, and R² for both CatBoost and a median-price baseline. The current run report is saved at [`../artifacts/chronological_evaluation.json`](../artifacts/chronological_evaluation.json). It records the input hash, runtime versions, split metadata, configuration, limitations, and scores. Re-run the command below to regenerate it.
 
 This is a **calendar-time proxy evaluation**, not a prospective fare-quote backtest. The CSV has `Departure_Date` and `Days_Before_Departure`, but no verified timestamp for when each fare quote was observed or captured. We therefore cannot reconstruct which prices and fields were available at a historical booking time, prevent every form of temporal leakage, or validate a true booking-time recommendation. Treat all metrics as exploratory only.
+
+## Current run results
+
+The checked run used dataset SHA-256 `0b41ae9d512c2b6cb83f93ca48f9ff87d51172d1dd3aab13dac37220f982ef3d`, Python 3.11.15, NumPy 2.4.6, pandas 3.1.0, CatBoost 1.2.10, and scikit-learn 1.9.1.
+
+| Partition | Model MAE | Model RMSE | Model R² | Training-median MAE | Training-median RMSE | Training-median R² |
+|---|---:|---:|---:|---:|---:|---:|
+| Validation | 13,279.13 | 45,984.02 | 0.6435 | 55,831.93 | 80,448.87 | -0.0911 |
+| Test | 13,100.29 | 46,156.53 | 0.6363 | 54,091.92 | 79,360.87 | -0.0753 |
+
+MAE and RMSE use the dataset's price units. CatBoost beats this median baseline on all three reported metrics for both partitions in this run. This is a comparison on the supplied dataset and split only; it is not an independent validation and does not establish quote-time availability or prospective fare accuracy. The requirements file sets minimum dependency versions, so reproducing the same scores requires the versions recorded in the JSON report as well as the same code and data.
 
 ## Reproduce
 

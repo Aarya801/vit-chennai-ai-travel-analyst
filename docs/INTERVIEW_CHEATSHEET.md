@@ -8,7 +8,7 @@
 
 **Why R²?** It measures explained variance, but it is reported alongside absolute-error metrics.
 
-**Why held-out test data?** To estimate generalization to unseen rows.
+**Why held-out test data?** To measure performance on a later departure-date partition. Here this is only a calendar-time proxy: without fare quote timestamps it does not establish generalization to unseen booking times.
 
 **Hardest part?** Data cleaning: inconsistent duration, stops and passenger-count representations plus missing values.
 

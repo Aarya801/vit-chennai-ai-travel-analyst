@@ -2,7 +2,7 @@
 
 A Python and Streamlit project for exploring a supplied flight-pricing dataset, preparing model features, training a CatBoost regressor, and comparing historical booking lead-time groups.
 
-> **Evaluation status:** the repository now provides a reproducible departure-date-ordered train/validation/test evaluation. It is a calendar-time proxy, not a prospective fare-quote backtest: the dataset has no verified quote-observation timestamp. No model metrics are claimed here; run the documented evaluation command to produce scores for the supplied data. This project is exploratory and does not forecast guaranteed future fares.
+> **Evaluation status:** the reproducible departure-date-ordered evaluation reports test MAE ₹13,100.29, RMSE ₹46,156.53, and R² 0.6363 for CatBoost, compared with ₹54,091.92, ₹79,360.87, and -0.0753 for a training-median baseline. These are exploratory scores on a calendar-time proxy, not prospective fare-quote results: the dataset has no verified quote-observation timestamp. They do not establish future fare accuracy.
 
 ## What is implemented
 
@@ -14,9 +14,11 @@ A Python and Streamlit project for exploring a supplied flight-pricing dataset, 
 
 ## Data and evaluation limits
 
-The included dataset has 100,000 rows and 18 columns; 5,053 rows have no price and 1,961 rows are duplicates. The artifact-training script filters to rows with a price and fits on the remaining rows. The separate evaluator uses only dated, priced rows for its chronological split. `artifacts/metrics.json` contains legacy values, but the repository does not include enough provenance to establish how they were measured. Treat them as unverified artifact values, not evidence of generalization.
+The included dataset has 100,000 rows and 18 columns; 5,053 rows have no price and 1,961 rows are duplicates. It is checked into `data/flight_pricing_dataset.csv`, so cloning the repository provides the evaluation input. [`data/README.md`](data/README.md) notes that it was supplied for the VIT Chennai AIML recruitment challenge; no separate public download URL is available in the repository. The artifact-training script filters to rows with a price and fits on the remaining rows. The separate evaluator uses only dated, priced rows for its chronological split. `artifacts/metrics.json` contains legacy values, but the repository does not include enough provenance to establish how they were measured. Treat them as unverified artifact values, not evidence of generalization.
 
 The evaluation splits rows by unique `Departure_Date`, keeping all rows for one departure date in the same partition. This orders travel dates, not fare observation times. There is no verified timestamp for when a fare was observed or captured, so the evaluation cannot reconstruct the information available at historical booking time, rule out every form of temporal leakage, or validate prospective fare advice. `Days_Before_Departure` and other recorded features are treated as supplied; their availability at quote time is unverified. The booking-window analysis is retrospective.
+
+The latest run report is [`artifacts/chronological_evaluation.json`](artifacts/chronological_evaluation.json). On the held-out departure-date test partition, CatBoost achieved lower MAE and RMSE and higher R² than the training-median baseline. The report records the dataset SHA-256, split bounds, row counts, exclusions, fixed model settings, and runtime versions. Recreate it with the command below; scores remain exploratory and should not be presented as prospective fare accuracy.
 
 No lockfile is included. `AI_Travel_Analyst_VIT_Chennai_Submission.zip` is a packaged submission archive, not a clean reproducible release: it contains a nested copy of the project and generated Python cache files. The repository source and `requirements.txt` are the reviewable inputs.
 
@@ -52,7 +54,7 @@ Run the current tests:
 pytest -q
 ```
 
-The tests check basic cleaning, booking-window output, and deterministic chronological date partitioning. They do **not** evaluate CatBoost model quality.
+The tests check basic cleaning, departure-date feature values, booking-window output, and deterministic chronological date partitioning. They do **not** evaluate CatBoost model quality.
 
 Retrain the model artifact:
 
@@ -72,6 +74,10 @@ See [the evaluation protocol](docs/EVALUATION.md) for split rules, reproducibili
 
 The pipeline normalizes duration strings to minutes, normalizes stop and passenger-count values, converts selected numeric text, parses the departure date into month and day-of-year, and represents missing categorical values as `Unknown`. The model uses categorical columns directly through CatBoost.
 
+## Architecture and demo
+
+The Streamlit app loads the checked-in CSV through `src/data_utils.py`, then renders filtered historical price analyses and booking-window summaries. The separate evaluation CLI cleans the data, partitions eligible rows by departure date, fits CatBoost on the training partition, compares it with a training-median baseline, and writes a JSON report. The training script separately saves a model trained on all priced rows; the app does not provide a live fare API or use that saved model for inference. The stack is Python, Pandas, NumPy, CatBoost, scikit-learn, Plotly, Streamlit, and pytest. No hosted demo or screenshots are published; use the local run instructions and [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
+
 ## Project layout
 
 - `app.py` — Streamlit dashboard
@@ -87,8 +93,8 @@ The pipeline normalizes duration strings to minutes, normalizes stop and passeng
 
 ## Next engineering steps
 
-1. Run and review the documented evaluation in an environment with the required dependencies; preserve its output and exact dependency versions if reporting the scores.
+1. Add a dependency lockfile so future environments can reproduce the same package versions directly.
 2. Obtain a trustworthy fare-observation or booking timestamp before attempting prospective booking-time validation.
-3. Add tests for feature preparation and end-to-end evaluation once the evaluation environment is available.
+3. Expand feature-preparation coverage and add end-to-end evaluation tests using a lightweight fixture rather than a full CatBoost training run.
 
 Until those steps are complete, describe the model as a training pipeline experiment rather than a validated fare predictor.

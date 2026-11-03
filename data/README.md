@@ -1,1 +1,1 @@
-This is the official `flight_pricing_dataset.csv` supplied through the VIT Chennai AIML recruitment challenge Google Drive.
+This is the official `flight_pricing_dataset.csv` supplied through the VIT Chennai AIML recruitment challenge Google Drive. The file is included at `data/flight_pricing_dataset.csv`, so cloning this repository provides the data needed to run the project and reproduce its evaluation. No separate public download URL is available here.

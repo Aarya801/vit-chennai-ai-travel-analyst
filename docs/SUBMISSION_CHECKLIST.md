@@ -14,5 +14,5 @@
 - [x] Demo script
 - [x] Interview cheat sheet
 - [ ] Record 3–5 minute demo video
-- [ ] Create public GitHub repository and push
+- [x] Public GitHub repository with project pushed
 - [ ] Submit GitHub URL/video per club instructions

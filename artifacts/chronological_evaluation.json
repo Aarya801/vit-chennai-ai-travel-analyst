@@ -1,0 +1,102 @@
+{
+  "evaluation": "departure-date-ordered proxy; not prospective quote-time validation",
+  "source_file": "data\\flight_pricing_dataset.csv",
+  "source_sha256": "0b41ae9d512c2b6cb83f93ca48f9ff87d51172d1dd3aab13dac37220f982ef3d",
+  "runtime_versions": {
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "catboost": "1.2.10",
+    "scikit_learn": "1.9.1"
+  },
+  "split_fractions": {
+    "train_unique_dates": 0.6,
+    "validation_unique_dates": 0.2,
+    "test_unique_dates": 0.2
+  },
+  "excluded_rows": {
+    "missing_price": 5053,
+    "priced_rows_missing_departure_date": 4678
+  },
+  "features": [
+    "Airline",
+    "Source",
+    "Destination",
+    "Travel_Class",
+    "Season",
+    "Weekday",
+    "Aircraft_Type",
+    "Booking_Channel",
+    "Distance_km",
+    "Days_Before_Departure",
+    "Passenger_Count",
+    "Duration_Minutes",
+    "Total_Stops",
+    "Departure_Month",
+    "Departure_DayOfYear"
+  ],
+  "target_transform": "log1p(Price); predictions transformed back with expm1",
+  "model_parameters": {
+    "iterations": 350,
+    "depth": 8,
+    "learning_rate": 0.08,
+    "loss_function": "RMSE",
+    "random_seed": 42,
+    "thread_count": 1
+  },
+  "baseline": "training-set median Price, used unchanged on validation and test",
+  "validation_role": "reported only; no tuning or model selection is performed",
+  "splits": {
+    "train": {
+      "rows": 54164,
+      "unique_departure_dates": 438,
+      "first_departure_date": "2025-01-01",
+      "last_departure_date": "2026-03-14"
+    },
+    "validation": {
+      "rows": 17925,
+      "unique_departure_dates": 146,
+      "first_departure_date": "2026-03-15",
+      "last_departure_date": "2026-08-07"
+    },
+    "test": {
+      "rows": 18180,
+      "unique_departure_dates": 146,
+      "first_departure_date": "2026-08-08",
+      "last_departure_date": "2026-12-31"
+    }
+  },
+  "scores": {
+    "validation": {
+      "model": {
+        "mae": 13279.13166024621,
+        "rmse": 45984.02164712146,
+        "r2": 0.6435013211924189
+      },
+      "training_median_baseline": {
+        "mae": 55831.93049260809,
+        "rmse": 80448.86928512435,
+        "r2": -0.09114863010341567
+      }
+    },
+    "test": {
+      "model": {
+        "mae": 13100.294060925518,
+        "rmse": 46156.53096204512,
+        "r2": 0.6362561169834742
+      },
+      "training_median_baseline": {
+        "mae": 54091.923349834986,
+        "rmse": 79360.87398883486,
+        "r2": -0.07533123624608606
+      }
+    }
+  },
+  "limitations": [
+    "Departure_Date is not a fare observation or booking timestamp.",
+    "The chronological split orders travel dates, not when the fare became observable.",
+    "Days_Before_Departure and other fields are assumed available as recorded; their quote-time availability is unverified.",
+    "These scores do not establish prospective booking-time performance or future fare accuracy."
+  ]
+}

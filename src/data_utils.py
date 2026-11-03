@@ -22,6 +22,6 @@ def clean_dataframe(df):
     o["Passenger_Count"]=o["Passenger_Count"].map(lambda x: {"one":1,"two":2,"three":3,"four":4,"five":5,"six":6}.get(str(x).strip().lower(),parse_numeric(x)))
     o["Duration_Minutes"]=o["Duration"].map(parse_duration_minutes)
     o["Total_Stops"]=o["Total_Stops"].map(lambda x: 0.0 if pd.isna(x) else (0.0 if "non" in str(x).lower() else parse_numeric(x)))
-    d=pd.to_datetime(o["Departure_Date"],errors="coerce"); o["Departure_Month"]=d.dt.month; o["Departure_DayOfYear"]=d.dt.dayofyear; o["Departure_Year"]=d.dt.year
+    d=pd.to_datetime(o["Departure_Date"],errors="coerce"); o["Departure_Month"]=d.dt.month; o["Departure_DayOfYear"]=d.dt.day_of_year; o["Departure_Year"]=d.dt.year
     return o
 def load_data(path="data/flight_pricing_dataset.csv"): return clean_dataframe(pd.read_csv(path))
