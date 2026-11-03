@@ -1,12 +1,12 @@
 from pathlib import Path
-import json, pandas as pd, plotly.express as px, streamlit as st
+import pandas as pd, plotly.express as px, streamlit as st
 from src.data_utils import load_data
 from src.booking_analysis import booking_summary,recommend_booking_window
 ROOT=Path(__file__).parent
 st.set_page_config(page_title="AI Travel Analyst",page_icon="✈️",layout="wide")
 @st.cache_data
 def data(): return load_data(ROOT/"data/flight_pricing_dataset.csv")
-df=data(); metrics=json.loads((ROOT/"artifacts/metrics.json").read_text())
+df=data()
 st.title("✈️ AI Travel Analyst")
 st.caption("VIT Chennai AIML Club • Track 3: Data Science & Visualisation")
 with st.sidebar:
@@ -16,7 +16,7 @@ with st.sidebar:
 f=df.copy()
 for c,v in [("Airline",airline),("Source",source),("Destination",destination),("Travel_Class",travel_class)]:
     if v!="All": f=f[f[c].astype(str)==v]
-a,b,c,d=st.columns(4); a.metric("Rows",f"{len(df):,}"); b.metric("Usable prices",f"{df.Price.notna().sum():,}"); c.metric("R²",f"{metrics['catboost_r2']:.3f}"); d.metric("MAE",f"₹{metrics['catboost_mae']:,.0f}")
+a,b=st.columns(2); a.metric("Rows",f"{len(df):,}"); b.metric("Usable prices",f"{df.Price.notna().sum():,}")
 t1,t2,t3,t4=st.tabs(["📊 Exploration","🤖 Modeling","💰 Cheapest Booking","🧠 Insights"])
 with t1:
     x,y=st.columns(2)
@@ -37,11 +37,10 @@ with t1:
     s=f.dropna(subset=["Price"]); s=s.sample(min(10000,len(s)),random_state=42)
     st.plotly_chart(px.histogram(s,x="Price",nbins=50,title="Price distribution"),use_container_width=True)
 with t2:
-    st.subheader("Held-out regression evaluation")
-    st.write({"MAE":metrics["catboost_mae"],"RMSE":metrics["catboost_rmse"],"R²":metrics["catboost_r2"]})
-    fi=pd.read_csv(ROOT/"artifacts/feature_importance.csv").head(12).sort_values("importance")
-    st.plotly_chart(px.bar(fi,x="importance",y="feature",orientation="h",title="Top CatBoost feature importance"),use_container_width=True)
-    st.info("CatBoost was selected because the data contains multiple categorical variables and nonlinear interactions. Price is trained on log1p(price) to reduce the effect of extreme values.")
+    st.subheader("Model training status")
+    st.write("The repository includes a CatBoost training script that fits on all rows with a known price and saves a model artifact.")
+    st.warning("A departure-date-ordered evaluation is available with `python -m scripts.evaluate_model`. It is only a calendar-time proxy: no verified fare-quote timestamp is available, so these results cannot establish prospective booking-time performance or rule out all temporal leakage.")
+    st.info("The evaluator fits its own model on the chronological training partition and reports validation/test scores against a training-median baseline. It does not overwrite the all-priced-rows model artifact. See docs/EVALUATION.md for the protocol and limitations; legacy stored metrics remain unverified.")
 with t3:
     r=recommend_booking_window(df,airline,source,destination,travel_class)
     if r["fallback_used"]: st.warning("Limited history for this exact combination; recommendation falls back to the full dataset.")
