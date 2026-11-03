@@ -39,8 +39,8 @@ with t1:
 with t2:
     st.subheader("Model training status")
     st.write("The repository includes a CatBoost training script that fits on all rows with a known price and saves a model artifact.")
-    st.warning("A reproducible held-out evaluation is not implemented. Stored metric and feature-importance artifacts do not have enough checked-in provenance to present as validated test results.")
-    st.info("CatBoost accepts categorical features directly. The training script models log1p(price); a separate held-out evaluation is needed before making claims about prediction quality.")
+    st.warning("A departure-date-ordered evaluation is available with `python -m scripts.evaluate_model`. It is only a calendar-time proxy: no verified fare-quote timestamp is available, so these results cannot establish prospective booking-time performance or rule out all temporal leakage.")
+    st.info("The evaluator fits its own model on the chronological training partition and reports validation/test scores against a training-median baseline. It does not overwrite the all-priced-rows model artifact. See docs/EVALUATION.md for the protocol and limitations; legacy stored metrics remain unverified.")
 with t3:
     r=recommend_booking_window(df,airline,source,destination,travel_class)
     if r["fallback_used"]: st.warning("Limited history for this exact combination; recommendation falls back to the full dataset.")
